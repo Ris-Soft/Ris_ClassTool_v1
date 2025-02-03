@@ -8,7 +8,7 @@ const WidgetsPage = defineAsyncComponent(() => import('./components/settings/wid
 const categories = ref([
   { name: '首页', component: HomePage, icon: 'bi-house' },
   { name: '课程', component: SchedulePage, icon: 'bi-calendar' },
-  { name: '组件', component: WidgetsPage, icon: 'bi-widgets' },
+  { name: '组件', component: WidgetsPage, icon: 'bi-archive-fill' },
 ]);
 
 const selectedCategory = ref(categories.value[0].component);
@@ -33,10 +33,7 @@ export default {
     <div class="settings-topbar">
       <div class="title">程序设置</div>
       <div class="version-info">
-        <span>版本号: 1.0.0</span>
-        <button class="btn btn-primary btn-sm">
-          <i class="bi bi-arrow-up-circle"></i> 升级
-        </button>
+        <span>1.0.0</span>
       </div>
     </div>
     <div class="settings-body">
@@ -79,7 +76,7 @@ body, html {
   justify-content: space-between;
   align-items: center;
   height: 40px;
-  padding: 0 20px;
+  padding: 0 10px;
   background-color: #ffffff; /* 强制使用浅色背景 */
   border-bottom: 1px solid #ccc;
 }

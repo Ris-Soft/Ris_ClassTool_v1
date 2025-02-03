@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <div class="header">
-            <h1 class="title">设置首页</h1>
+            <h1 class="title">课程页面</h1>
         </div>
     </div>
 </template>
@@ -17,7 +17,6 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     background-color: transparent;
 }
 
