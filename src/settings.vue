@@ -58,7 +58,7 @@ export default {
 </template>
 
 <style scoped>
-@import 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
 
 .settings-container {
   overflow: hidden;
