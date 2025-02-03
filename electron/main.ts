@@ -16,7 +16,7 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 
 let settingsWindow: BrowserWindow | null
 let desktopWidgetWindow: BrowserWindow | null
-let tray: Tray | null
+let tray: Tray
 
 function createSettingsWindow() {
   if (settingsWindow) {
@@ -29,6 +29,7 @@ function createSettingsWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
     },
+    autoHideMenuBar: true // Hide the default toolbar
   })
 
   if (VITE_DEV_SERVER_URL) {
@@ -79,6 +80,7 @@ function createTray() {
   ])
   tray.setToolTip('瑞思课堂工具')
   tray.setContextMenu(contextMenu)
+  tray.on('click', createSettingsWindow)
 }
 
 app.on('window-all-closed', () => {
