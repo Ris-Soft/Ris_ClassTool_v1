@@ -6,9 +6,9 @@ const SchedulePage = defineAsyncComponent(() => import('./components/settings/sc
 const WidgetsPage = defineAsyncComponent(() => import('./components/settings/widgets.vue'));
 
 const categories = ref([
-  { name: '首页', component: HomePage },
-  { name: '课程', component: SchedulePage },
-  { name: '组件', component: WidgetsPage },
+  { name: '首页', component: HomePage, icon: 'bi-house' },
+  { name: '课程', component: SchedulePage, icon: 'bi-calendar' },
+  { name: '组件', component: WidgetsPage, icon: 'bi-widgets' },
 ]);
 
 const selectedCategory = ref(categories.value[0].component);
@@ -48,7 +48,7 @@ export default {
             @click="selectCategory(category.component)"
             :class="{ active: selectedCategory === category.component }"
           >
-            {{ category.name }}
+            <i :class="`bi ${category.icon}`"></i> {{ category.name }}
           </li>
         </ul>
       </div>
@@ -121,6 +121,12 @@ body, html {
   padding: 10px;
   cursor: pointer;
   transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.settings-sidebar li i {
+  margin-right: 10px;
 }
 
 .settings-sidebar li:hover,
