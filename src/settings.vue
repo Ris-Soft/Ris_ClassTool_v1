@@ -2,12 +2,12 @@
 import { ref, defineAsyncComponent } from 'vue';
 
 const HomePage = defineAsyncComponent(() => import('./components/settings/home.vue'));
-const ScheduelePage = defineAsyncComponent(() => import('./components/settings/schedule.vue'));
+const SchedulePage = defineAsyncComponent(() => import('./components/settings/schedule.vue'));
 const WidgetsPage = defineAsyncComponent(() => import('./components/settings/widgets.vue'));
 
 const categories = ref([
   { name: '首页', component: HomePage },
-  { name: '课程', component: ScheduelePage },
+  { name: '课程', component: SchedulePage },
   { name: '组件', component: WidgetsPage },
 ]);
 
@@ -39,20 +39,22 @@ export default {
         </button>
       </div>
     </div>
-    <div class="settings-sidebar">
-      <ul>
-        <li
-          v-for="category in categories"
-          :key="category.name"
-          @click="selectCategory(category.component)"
-          :class="{ active: selectedCategory === category.component }"
-        >
-          {{ category.name }}
-        </li>
-      </ul>
-    </div>
-    <div class="settings-content">
-      <component :is="selectedCategory"></component>
+    <div class="settings-body">
+      <div class="settings-sidebar">
+        <ul>
+          <li
+            v-for="category in categories"
+            :key="category.name"
+            @click="selectCategory(category.component)"
+            :class="{ active: selectedCategory === category.component }"
+          >
+            {{ category.name }}
+          </li>
+        </ul>
+      </div>
+      <div class="settings-content">
+        <component :is="selectedCategory"></component>
+      </div>
     </div>
   </div>
 </template>
@@ -60,8 +62,12 @@ export default {
 <style scoped>
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 
+body, html {
+  padding: 0;
+  margin: 0;
+}
+
 .settings-container {
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -90,6 +96,12 @@ export default {
 
 .settings-topbar .version-info span {
   margin-right: 10px;
+}
+
+.settings-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
 .settings-sidebar {
