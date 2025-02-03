@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, Tray, Menu } from 'electron'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
@@ -6,63 +6,96 @@ import path from 'node:path'
 const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// The built directory structure
-//
-// ├─┬─┬ dist
-// │ │ └── index.html
-// │ │
-// │ ├─┬ dist-electron
-// │ │ ├── main.js
-// │ │ └── preload.mjs
-// │
 process.env.APP_ROOT = path.join(__dirname, '..')
 
-// 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
-let win: BrowserWindow | null
+let settingsWindow: BrowserWindow | null
+let desktopWidgetWindow: BrowserWindow | null
+let tray: Tray | null
 
-function createWindow() {
-  win = new BrowserWindow({
+function createSettingsWindow() {
+  if (settingsWindow) {
+    settingsWindow.focus()
+    return
+  }
+
+  settingsWindow = new BrowserWindow({
     icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
     },
   })
 
-  // Test active push message to Renderer-process.
-  win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', (new Date).toLocaleString())
+  if (VITE_DEV_SERVER_URL) {
+    settingsWindow.loadURL(`${VITE_DEV_SERVER_URL}/settings`)
+  } else {
+    settingsWindow.loadFile(path.join(RENDERER_DIST, 'settings.html'))
+  }
+
+  settingsWindow.on('closed', () => {
+    settingsWindow = null
+  })
+}
+
+function createDesktopWidgetWindow() {
+  const { width, height } = require('electron').screen.getPrimaryDisplay().workAreaSize
+
+  desktopWidgetWindow = new BrowserWindow({
+    width,
+    height,
+    icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
+    frame: false,
+    transparent: true,
+    resizable: false,
+    movable: false,
+    minimizable: false,
+    maximizable: false,
+    closable: false,
+    alwaysOnTop: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.mjs'),
+    },
   })
 
+  desktopWidgetWindow.setIgnoreMouseEvents(true, { forward: true })
+
   if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL)
+    desktopWidgetWindow.loadURL(`${VITE_DEV_SERVER_URL}/desktop-widget`)
   } else {
-    // win.loadFile('dist/index.html')
-    win.loadFile(path.join(RENDERER_DIST, 'index.html'))
+    desktopWidgetWindow.loadFile(path.join(RENDERER_DIST, 'desktop-widget.html'))
   }
 }
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+function createTray() {
+  tray = new Tray(path.join(process.env.VITE_PUBLIC, 'logo.png'))
+  const contextMenu = Menu.buildFromTemplate([
+    { label: '打开设置', click: createSettingsWindow },
+    { label: '退出程序', click: () => app.quit() }
+  ])
+  tray.setToolTip('瑞思课堂工具')
+  tray.setContextMenu(contextMenu)
+}
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
-    win = null
+    settingsWindow = null
+    desktopWidgetWindow = null
   }
 })
 
 app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
+    createDesktopWidgetWindow()
   }
 })
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  createDesktopWidgetWindow()
+  createTray()
+})
