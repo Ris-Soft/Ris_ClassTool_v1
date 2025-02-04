@@ -71,11 +71,6 @@ export default {
 <style scoped>
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 
-body, html {
-  padding: 0;
-  margin: 0;
-}
-
 .settings-container {
   display: flex;
   flex-direction: column;
