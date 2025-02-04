@@ -18,12 +18,13 @@ function createSettingsWindow() {
     return;
   }
   settingsWindow = new BrowserWindow({
+    height: 600,
+    width: 900,
     icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
     webPreferences: {
       preload: path.join(__dirname, "preload.mjs")
     },
     autoHideMenuBar: true
-    // Hide the default toolbar
   });
   if (VITE_DEV_SERVER_URL) {
     settingsWindow.loadURL(`${VITE_DEV_SERVER_URL}/settings`);

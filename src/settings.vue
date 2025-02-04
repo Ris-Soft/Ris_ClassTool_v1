@@ -4,11 +4,23 @@ import { ref, defineAsyncComponent } from 'vue';
 const HomePage = defineAsyncComponent(() => import('./components/settings/home.vue'));
 const SchedulePage = defineAsyncComponent(() => import('./components/settings/schedule.vue'));
 const WidgetsPage = defineAsyncComponent(() => import('./components/settings/widgets.vue'));
+const AppearancePage = defineAsyncComponent(() => import('./components/settings/appearance.vue'));
+const DataPage = defineAsyncComponent(() => import('./components/settings/data.vue'));
+const TimePage = defineAsyncComponent(() => import('./components/settings/time.vue'));
+const PluginPage = defineAsyncComponent(() => import('./components/settings/plugin.vue'));
+const SecurityPage = defineAsyncComponent(() => import('./components/settings/security.vue'));
+const AboutPage = defineAsyncComponent(() => import('./components/settings/about.vue'));
 
 const categories = ref([
   { name: '首页', component: HomePage, icon: 'bi-house' },
   { name: '课程', component: SchedulePage, icon: 'bi-calendar' },
   { name: '组件', component: WidgetsPage, icon: 'bi-archive-fill' },
+  { name: '外观', component: AppearancePage, icon: 'bi-palette' },
+  { name: '数据', component: DataPage, icon: 'bi-bar-chart' },
+  { name: '时间', component: TimePage, icon: 'bi-clock' },
+  { name: '扩展', component: PluginPage, icon: 'bi-clock' },
+  { name: '安全', component: SecurityPage, icon: 'bi-shield-lock' },
+  { name: '关于', component: AboutPage, icon: 'bi-info-circle' },
 ]);
 
 const selectedCategory = ref(categories.value[0].component);
@@ -126,11 +138,13 @@ body, html {
   margin-right: 10px;
 }
 
-.settings-sidebar li:hover,
+.settings-sidebar li:hover {
+  background-color: #eeeeee;
+}
+
 .settings-sidebar li.active {
   background-color: #e0e0e0;
 }
-
 .settings-sidebar li.active {
   font-weight: bold;
 }
