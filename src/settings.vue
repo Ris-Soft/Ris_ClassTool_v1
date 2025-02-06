@@ -1,26 +1,44 @@
 <script>
-import { ref, defineAsyncComponent } from 'vue';
+import { ref, defineAsyncComponent } from "vue";
 
-const HomePage = defineAsyncComponent(() => import('./components/settings/home.vue'));
-const SchedulePage = defineAsyncComponent(() => import('./components/settings/schedule.vue'));
-const WidgetsPage = defineAsyncComponent(() => import('./components/settings/widgets.vue'));
-const AppearancePage = defineAsyncComponent(() => import('./components/settings/appearance.vue'));
-const DataPage = defineAsyncComponent(() => import('./components/settings/data.vue'));
-const TimePage = defineAsyncComponent(() => import('./components/settings/time.vue'));
-const PluginPage = defineAsyncComponent(() => import('./components/settings/plugin.vue'));
-const SecurityPage = defineAsyncComponent(() => import('./components/settings/security.vue'));
-const AboutPage = defineAsyncComponent(() => import('./components/settings/about.vue'));
+const HomePage = defineAsyncComponent(() =>
+  import("./components/settings/home.vue")
+);
+const SchedulePage = defineAsyncComponent(() =>
+  import("./components/settings/schedule.vue")
+);
+const WidgetsPage = defineAsyncComponent(() =>
+  import("./components/settings/widgets.vue")
+);
+const AppearancePage = defineAsyncComponent(() =>
+  import("./components/settings/appearance.vue")
+);
+const DataPage = defineAsyncComponent(() =>
+  import("./components/settings/data.vue")
+);
+const TimePage = defineAsyncComponent(() =>
+  import("./components/settings/time.vue")
+);
+const PluginPage = defineAsyncComponent(() =>
+  import("./components/settings/plugin.vue")
+);
+const SecurityPage = defineAsyncComponent(() =>
+  import("./components/settings/security.vue")
+);
+const AboutPage = defineAsyncComponent(() =>
+  import("./components/settings/about.vue")
+);
 
 const categories = ref([
-  { name: '首页', component: HomePage, icon: 'bi-house' },
-  { name: '课程', component: SchedulePage, icon: 'bi-calendar' },
-  { name: '组件', component: WidgetsPage, icon: 'bi-archive-fill' },
-  { name: '外观', component: AppearancePage, icon: 'bi-palette' },
-  { name: '数据', component: DataPage, icon: 'bi-bar-chart' },
-  { name: '时间', component: TimePage, icon: 'bi-clock' },
-  { name: '扩展', component: PluginPage, icon: 'bi-clock' },
-  { name: '安全', component: SecurityPage, icon: 'bi-shield-lock' },
-  { name: '关于', component: AboutPage, icon: 'bi-info-circle' },
+  { name: "首页", component: HomePage, icon: "bi-house" },
+  { name: "课程", component: SchedulePage, icon: "bi-calendar" },
+  { name: "组件", component: WidgetsPage, icon: "bi-archive-fill" },
+  { name: "外观", component: AppearancePage, icon: "bi-palette" },
+  { name: "数据", component: DataPage, icon: "bi-bar-chart" },
+  { name: "时间", component: TimePage, icon: "bi-clock" },
+  { name: "扩展", component: PluginPage, icon: "bi-plugin" },
+  { name: "安全", component: SecurityPage, icon: "bi-shield-lock" },
+  { name: "关于", component: AboutPage, icon: "bi-info-circle" },
 ]);
 
 const selectedCategory = ref(categories.value[0].component);
@@ -34,9 +52,9 @@ export default {
     return {
       categories,
       selectedCategory,
-      selectCategory
+      selectCategory,
     };
-  }
+  },
 };
 </script>
 
@@ -50,16 +68,17 @@ export default {
     </div>
     <div class="settings-body">
       <div class="settings-sidebar">
-        <ul>
-          <li
+        <fluent-listbox>
+          <fluent-option
             v-for="category in categories"
             :key="category.name"
             @click="selectCategory(category.component)"
-            :class="{ active: selectedCategory === category.component }"
+            :class="{ selected: selectedCategory === category.component }"
+            aria-selected="true"
           >
             <i :class="`bi ${category.icon}`"></i> {{ category.name }}
-          </li>
-        </ul>
+          </fluent-option>
+        </fluent-listbox>
       </div>
       <div class="settings-content">
         <component :is="selectedCategory"></component>
@@ -69,13 +88,32 @@ export default {
 </template>
 
 <style scoped>
-@import 'bootstrap-icons/font/bootstrap-icons.css';
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+fluent-listbox {
+  width: 100%;
+  outline: none;
+  border: none;
+  gap: 3px;
+}
+
+fluent-listbox fluent-option {
+  background-color: transparent;
+}
+
+fluent-listbox fluent-option:hover {
+  background-color: rgba(223, 223, 223, 0.445);
+}
+
+fluent-listbox fluent-option.selected {
+  background-color: rgba(223, 223, 223, 0.692);
+}
 
 .settings-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #f0f0f0; /* 强制使用浅色背景 */
+  background-color: rgb(243, 243, 243); /* 强制使用浅色背景 */
 }
 
 .settings-topbar {
@@ -84,8 +122,7 @@ export default {
   align-items: center;
   height: 40px;
   padding: 0 10px;
-  background-color: #ffffff; /* 强制使用浅色背景 */
-  border-bottom: 1px solid #ccc;
+  background-color: rgb(243, 243, 243); /* 强制使用浅色背景 */
 }
 
 .settings-topbar .title {
@@ -110,8 +147,7 @@ export default {
 
 .settings-sidebar {
   width: 200px;
-  border-right: 1px solid #ccc;
-  background-color: #ffffff; /* 强制使用浅色背景 */
+  background-color: rgb(243, 243, 243); /* 强制使用浅色背景 */
   color: black; /* 强制使用黑色文字 */
 }
 
@@ -148,7 +184,9 @@ export default {
   flex: 1;
   padding: 20px;
   overflow-y: auto; /* 添加滚动条，防止内容溢出 */
-  background-color: #f0f0f0; /* 强制使用浅色背景 */
+  background-color: rgb(246, 246, 246); /* 强制使用浅色背景 */
+  border-radius: 10px 0 0 0; /* 圆角边框 */
   color: black; /* 强制使用黑色文字 */
+  border: 1px solid #e3e3e3;
 }
 </style>
