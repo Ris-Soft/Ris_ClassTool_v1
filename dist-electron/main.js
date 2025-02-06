@@ -1,67 +1,93 @@
-import { app as n, BrowserWindow as l, Tray as f, Menu as u } from "electron";
-import { createRequire as w } from "node:module";
-import { fileURLToPath as T } from "node:url";
-import e from "node:path";
-const g = w(import.meta.url), a = e.dirname(T(import.meta.url));
-process.env.APP_ROOT = e.join(a, "..");
-const i = process.env.VITE_DEV_SERVER_URL, I = e.join(process.env.APP_ROOT, "dist-electron"), c = e.join(process.env.APP_ROOT, "dist");
-process.env.VITE_PUBLIC = i ? e.join(process.env.APP_ROOT, "public") : c;
-let o, t, r;
-function p() {
-  if (o) {
-    o.focus();
+import { app, BrowserWindow, Tray, Menu } from "electron";
+import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+const require2 = createRequire(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+process.env.APP_ROOT = path.join(__dirname, "..");
+const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
+const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron");
+const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
+process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, "public") : RENDERER_DIST;
+let settingsWindow;
+let desktopWidgetWindow;
+let tray;
+function createSettingsWindow() {
+  if (settingsWindow) {
+    settingsWindow.focus();
     return;
   }
-  o = new l({
+  settingsWindow = new BrowserWindow({
     height: 600,
     width: 900,
-    icon: e.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
+    icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
     webPreferences: {
-      preload: e.join(a, "preload.mjs")
+      preload: path.join(__dirname, "preload.mjs")
     },
-    autoHideMenuBar: !0
-  }), i ? o.loadURL(`${i}/settings`) : o.loadFile(e.join(c, "settings.html")), o.on("closed", () => {
-    o = null;
+    autoHideMenuBar: true
+  });
+  if (VITE_DEV_SERVER_URL) {
+    settingsWindow.loadURL(`${VITE_DEV_SERVER_URL}/settings`);
+  } else {
+    settingsWindow.loadFile(path.join(RENDERER_DIST, "settings.html"));
+  }
+  settingsWindow.on("closed", () => {
+    settingsWindow = null;
   });
 }
-function d() {
-  const { width: s, height: m } = g("electron").screen.getPrimaryDisplay().workAreaSize;
-  t = new l({
-    width: s,
-    height: m,
-    icon: e.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
-    frame: !1,
-    transparent: !0,
-    resizable: !1,
-    movable: !1,
-    minimizable: !1,
-    maximizable: !1,
-    closable: !1,
-    alwaysOnTop: !1,
+function createDesktopWidgetWindow() {
+  const { width, height } = require2("electron").screen.getPrimaryDisplay().workAreaSize;
+  desktopWidgetWindow = new BrowserWindow({
+    width,
+    height,
+    icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
+    frame: false,
+    transparent: true,
+    resizable: false,
+    movable: false,
+    minimizable: false,
+    maximizable: false,
+    closable: false,
+    alwaysOnTop: false,
     webPreferences: {
-      preload: e.join(a, "preload.mjs")
+      preload: path.join(__dirname, "preload.mjs")
     }
-  }), t.setIgnoreMouseEvents(!0, { forward: !0 }), i ? t.loadURL(`${i}/desktop-widget`) : t.loadFile(e.join(c, "desktop-widget.html"));
+  });
+  desktopWidgetWindow.setIgnoreMouseEvents(true, { forward: true });
+  if (VITE_DEV_SERVER_URL) {
+    desktopWidgetWindow.loadURL(`${VITE_DEV_SERVER_URL}/desktop-widget`);
+  } else {
+    desktopWidgetWindow.loadFile(path.join(RENDERER_DIST, "desktop-widget.html"));
+  }
 }
-function R() {
-  r = new f(e.join(process.env.VITE_PUBLIC, "logo.png"));
-  const s = u.buildFromTemplate([
-    { label: "打开设置", click: p },
-    { label: "退出程序", click: () => n.quit() }
+function createTray() {
+  tray = new Tray(path.join(process.env.VITE_PUBLIC, "logo.png"));
+  const contextMenu = Menu.buildFromTemplate([
+    { label: "打开设置", click: createSettingsWindow },
+    { label: "退出程序", click: () => app.quit() }
   ]);
-  r.setToolTip("瑞思课堂工具"), r.setContextMenu(s), r.on("click", p);
+  tray.setToolTip("瑞思课堂工具");
+  tray.setContextMenu(contextMenu);
+  tray.on("click", createSettingsWindow);
 }
-n.on("window-all-closed", () => {
-  process.platform !== "darwin" && (n.quit(), o = null, t = null);
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
+    settingsWindow = null;
+    desktopWidgetWindow = null;
+  }
 });
-n.on("activate", () => {
-  l.getAllWindows().length === 0 && d();
+app.on("activate", () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createDesktopWidgetWindow();
+  }
 });
-n.whenReady().then(() => {
-  d(), R();
+app.whenReady().then(() => {
+  createDesktopWidgetWindow();
+  createTray();
 });
 export {
-  I as MAIN_DIST,
-  c as RENDERER_DIST,
-  i as VITE_DEV_SERVER_URL
+  MAIN_DIST,
+  RENDERER_DIST,
+  VITE_DEV_SERVER_URL
 };
