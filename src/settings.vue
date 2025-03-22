@@ -1,50 +1,27 @@
 <script>
 import { ref, defineAsyncComponent } from "vue";
 
-const HomePage = defineAsyncComponent(() =>
-  import("./components/settings/home.vue")
-);
-const SchedulePage = defineAsyncComponent(() =>
-  import("./components/settings/schedule.vue")
-);
-const WidgetsPage = defineAsyncComponent(() =>
-  import("./components/settings/widgets.vue")
-);
-const AppearancePage = defineAsyncComponent(() =>
-  import("./components/settings/appearance.vue")
-);
-const DataPage = defineAsyncComponent(() =>
-  import("./components/settings/data.vue")
-);
-const TimePage = defineAsyncComponent(() =>
-  import("./components/settings/time.vue")
-);
-const PluginPage = defineAsyncComponent(() =>
-  import("./components/settings/plugin.vue")
-);
-const SecurityPage = defineAsyncComponent(() =>
-  import("./components/settings/security.vue")
-);
-const AboutPage = defineAsyncComponent(() =>
-  import("./components/settings/about.vue")
-);
-
 const categories = ref([
-  { name: "首页", component: HomePage, icon: "bi-house" },
-  { name: "课程", component: SchedulePage, icon: "bi-calendar" },
-  { name: "组件", component: WidgetsPage, icon: "bi-archive-fill" },
-  { name: "外观", component: AppearancePage, icon: "bi-palette" },
-  { name: "数据", component: DataPage, icon: "bi-bar-chart" },
-  { name: "时间", component: TimePage, icon: "bi-clock" },
-  { name: "扩展", component: PluginPage, icon: "bi-plugin" },
-  { name: "安全", component: SecurityPage, icon: "bi-shield-lock" },
-  { name: "关于", component: AboutPage, icon: "bi-info-circle" },
+  { name: "课堂工具", component: "home", icon: "bi-house" },
+  // { name: "课程", component: "schedule", icon: "bi-calendar" },
+  { name: "桌面整理", component: "desktop", icon: "bi-archive-fill" },
+  { name: "侧栏设置", component: "sidebar", icon: "bi-layout-sidebar-inset" },
+  // { name: "外观", component: "appearance", icon: "bi-palette" },
+  // { name: "数据", component: "data", icon: "bi-bar-chart" },
+  // { name: "时间", component: "time", icon: "bi-clock" },
+  // { name: "扩展", component: "plugin", icon: "bi-plugin" },
+  // { name: "安全", component: "security", icon: "bi-shield-lock" },
+  { name: "关于软件", component: "about", icon: "bi-info-circle" },
 ]);
 
-const selectedCategory = ref(categories.value[0].component);
+const selectedCategory = ref(defineAsyncComponent(() =>
+  import(`./components/settings/${categories.value[0].component}.vue`)
+));
 
 const selectCategory = (component) => {
-  selectedCategory.value = component;
+  selectedCategory.value = defineAsyncComponent(() =>
+    import(`./components/settings/${component}.vue`)
+  );
 };
 
 export default {
@@ -69,13 +46,8 @@ export default {
     <div class="settings-body">
       <div class="settings-sidebar">
         <fluent-listbox>
-          <fluent-option
-            v-for="category in categories"
-            :key="category.name"
-            @click="selectCategory(category.component)"
-            :class="{ selected: selectedCategory === category.component }"
-            aria-selected="true"
-          >
+          <fluent-option v-for="category in categories" :key="category.name" @click="selectCategory(category.component)"
+            :class="{ selected: selectedCategory === category.component }" aria-selected="true">
             <i :class="`bi ${category.icon}`"></i> {{ category.name }}
           </fluent-option>
         </fluent-listbox>
@@ -113,7 +85,8 @@ fluent-listbox fluent-option.selected {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: rgb(243, 243, 243); /* 强制使用浅色背景 */
+  background-color: rgb(243, 243, 243);
+  /* 强制使用浅色背景 */
 }
 
 .settings-topbar {
@@ -122,7 +95,8 @@ fluent-listbox fluent-option.selected {
   align-items: center;
   height: 40px;
   padding: 0 10px;
-  background-color: rgb(243, 243, 243); /* 强制使用浅色背景 */
+  background-color: rgb(243, 243, 243);
+  /* 强制使用浅色背景 */
 }
 
 .settings-topbar .title {
@@ -147,8 +121,10 @@ fluent-listbox fluent-option.selected {
 
 .settings-sidebar {
   width: 200px;
-  background-color: rgb(243, 243, 243); /* 强制使用浅色背景 */
-  color: black; /* 强制使用黑色文字 */
+  background-color: rgb(243, 243, 243);
+  /* 强制使用浅色背景 */
+  color: black;
+  /* 强制使用黑色文字 */
 }
 
 .settings-sidebar ul {
@@ -176,6 +152,7 @@ fluent-listbox fluent-option.selected {
 .settings-sidebar li.active {
   background-color: #e0e0e0;
 }
+
 .settings-sidebar li.active {
   font-weight: bold;
 }
@@ -183,10 +160,14 @@ fluent-listbox fluent-option.selected {
 .settings-content {
   flex: 1;
   padding: 20px;
-  overflow-y: auto; /* 添加滚动条，防止内容溢出 */
-  background-color: rgb(246, 246, 246); /* 强制使用浅色背景 */
-  border-radius: 10px 0 0 0; /* 圆角边框 */
-  color: black; /* 强制使用黑色文字 */
+  overflow-y: auto;
+  /* 添加滚动条，防止内容溢出 */
+  background-color: rgb(246, 246, 246);
+  /* 强制使用浅色背景 */
+  border-radius: 10px 0 0 0;
+  /* 圆角边框 */
+  color: black;
+  /* 强制使用黑色文字 */
   border: 1px solid #e3e3e3;
 }
 </style>

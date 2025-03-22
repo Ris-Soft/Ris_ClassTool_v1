@@ -87,6 +87,7 @@ function createTray() {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
+    return;
     app.quit()
     settingsWindow = null
     desktopWidgetWindow = null
@@ -95,11 +96,11 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createDesktopWidgetWindow()
+    // createDesktopWidgetWindow()
   }
 })
 
 app.whenReady().then(() => {
-  createDesktopWidgetWindow()
+  // createDesktopWidgetWindow()
   createTray()
 })
